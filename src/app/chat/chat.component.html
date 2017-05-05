@@ -1,0 +1,21 @@
+<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 chat">
+  <div class="header">
+    <div class="brand">DChat</div>
+    <div class="right">{{address?address:"Not connected"}}</div>
+  </div>
+  <div class="messages">
+    <div *ngFor="let message of messages;let i=index" class="message-container">
+      <div class="message" [ngClass]="{right:message.sender==address}">
+        <div class="content" [ngClass]="{right:message.sender==address}">
+          <div class="avatar" [ngClass]="{right:message.sender==address}"><img [src]="icons[i]"></div>
+          <div class="content">{{message.message}}</div>
+        </div>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>
+  <div class="footer">
+    <input class="form-control" [(ngModel)]="newMessage">
+    <button class="btn btn-primary" (click)="sendMessage()">Send</button>
+  </div>
+</div>
