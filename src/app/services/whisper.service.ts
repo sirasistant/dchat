@@ -59,7 +59,7 @@ export class WhisperService {
 
   public prepare() {
     var external: any = ExternalWeb3;
-    this.web3 = new external(new external.providers.HttpProvider("http://cubosybridas.cloudapp.net:443"));
+    this.web3 = new external(new external.providers.HttpProvider("https://shh.assistantindustries.es:443"));
     this.injectedWeb3 = window.web3;
     if (this.web3 && this.injectedWeb3) {
       this.init().then(userAccounts => {
