@@ -72,7 +72,7 @@ export class WhisperService {
           broadcastWatch.watch((err, m) => {
             if (m.from != this.identity) {
               try {
-                var message = new Message(JSON.parse(this.web3.toAscii(m.payload)));
+                var message = new Message(JSON.parse(this.hexDecode(m.payload)));
                 this.zone.run(() => {
                   this.messagesSubject.next(message);
                 });
@@ -114,14 +114,12 @@ export class WhisperService {
   }
 
   public sendMessage(toSend: String): Promise<Message> {
-    toSend = toSend.replace(/[^\x00-\x7F]/g, "");
     return new Promise((resolve, reject) => {
       var message = new Message({ sender: this.userAddresses[0], message: toSend });
-      var payload = this.web3.fromAscii(JSON.stringify(message.toJson()));
       this.web3.shh.post({
         "from": this.identity,
         "topics": [this.TOPIC],
-        "payload": payload,
+        "payload": this.hexEncode(JSON.stringify(message)),
         "ttl": 100
       }, (err, data) => {
         this.zone.run(() => {
@@ -133,7 +131,32 @@ export class WhisperService {
     });
   }
 
+  hexEncode(toEncode: string) {
+    var hex, i;
+
+    var result = "0x";
+    for (i = 0; i < toEncode.length; i++) {
+      hex = toEncode.charCodeAt(i).toString(16);
+      result += ("000" + hex).slice(-4);
+    }
+
+    return result
+  }
+
+  hexDecode(hex: string) {
+    hex = hex.substring(2,hex.length);
+    var j;
+    var hexes = hex.match(/.{1,4}/g) || [];
+    var back = "";
+    for (j = 0; j < hexes.length; j++) {
+      back += String.fromCharCode(parseInt(hexes[j], 16));
+    }
+    return back;
+  }
+
 }
+
+
 
 export class ConnectionStatus {
   connected: boolean;
