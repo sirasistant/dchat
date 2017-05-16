@@ -16,7 +16,6 @@ export class WhisperService {
   injectedWeb3: any = null;
 
   userAddresses: String[] = [];
-  network: String = null;
   connectionSubject = new BehaviorSubject<ConnectionStatus>(null);
   identity: any;
 
@@ -32,29 +31,6 @@ export class WhisperService {
       bytes.push(parseInt(hex.substr(i, 2), 16));
     }
     return bytes;
-  }
-
-  getNetwork(): Promise<string> {
-    return new Promise<string>((resolve, reject) => {
-      this.web3.eth.getBlock(0, (err: any, block: any) => {
-        this.zone.run(() => {
-          if (err) {
-            return reject(err);
-          } else {
-            switch (block.hash) {
-              case "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3":
-                resolve("main")
-                break;
-              case "0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d":
-                resolve("ropsten")
-                break;
-              default:
-                reject("Unknown network");
-            }
-          }
-        });
-      })
-    });
   }
 
   public prepare() {
@@ -101,10 +77,7 @@ export class WhisperService {
               if (list.length == 0) {
                 return reject("No address")
               } else {
-                this.getNetwork().then(network => {
-                  this.network = network;
                   return resolve(list);
-                }).catch(err => { reject(err) })
               }
             }
           });
